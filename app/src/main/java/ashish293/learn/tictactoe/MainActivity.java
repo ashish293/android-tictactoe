@@ -33,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         btn = new Button[9];
+        btnStr = new String[9];
+        winner = 0;
         btn[0] = findViewById(R.id.btn_0);
         btn[1] = findViewById(R.id.btn_1);
         btn[2] = findViewById(R.id.btn_2);
@@ -47,29 +49,31 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void PlayGame(View view){
+        System.out.println("PlayGame");
         Button curBtn = (Button) view;
         if(curBtn.getText().toString().equals("")){
             if(firstUser){
                 curBtn.setText("X");
-                firstUser = false;
             }else{
                 curBtn.setText("O");
-                firstUser = true;
             }
+            curBtn.setEnabled(false);
+            firstUser = !firstUser;
             count++;
+            if(!check()){
+                if(count == 9){
+                    TextView status = findViewById(R.id.tv_winner);
+                    status.setText("Game Draw");
+                    Button resetBtn = findViewById(R.id.btn_reset);
+                    resetBtn.setVisibility(View.VISIBLE);
+                }
+            };
         }
-        if (firstUser) {
-            curBtn.setText("X");
-        } else {
-            curBtn.setText("O");
-        }
-        firstUser = !firstUser;
-
     }
 
     private void gameOver(){
         TextView winner = findViewById(R.id.tv_winner);
-        winner.setText("Winner is " + winner);
+        winner.setText("Player " + this.winner +" Won");
         Button resetBtn = findViewById(R.id.btn_reset);
         resetBtn.setVisibility(View.VISIBLE);
 
@@ -84,22 +88,26 @@ public class MainActivity extends AppCompatActivity {
 
         // Check Rows and Columns
         for (int i = 0; i < 3; i++) {
-            if (btnStr[i * 3 + 0].equals(btnStr[i * 3 + 1]) && btnStr[1].equals(btnStr[i * 3 + 2])) {
+            if (!btnStr[i * 3 + 0].equals("") && btnStr[i * 3 + 0].equals(btnStr[i * 3 + 1]) && btnStr[1].equals(btnStr[i * 3 + 2])) {
                 winner = btnStr[i*3].equals("X")?1:2;
+                gameOver();
                 return true;
-            }if (btnStr[i + 0].equals(btnStr[i + 3]) && btnStr[1].equals(btnStr[i + 6])) {
+            }if (!btnStr[i + 0].equals("") && btnStr[i + 0].equals(btnStr[i + 3]) && btnStr[1].equals(btnStr[i + 6])) {
                 winner = btnStr[i+0].equals("X")?1:2;
+                gameOver();
                 return true;
             }
         }
 
         // Diagonal Check
-        if(btnStr[0].equals(btnStr[4]) && btnStr[4].equals(btnStr[8])){
+        if(!btnStr[0].equals("") && btnStr[0].equals(btnStr[4]) && btnStr[4].equals(btnStr[8])){
             winner = btnStr[0].equals("X")?1:2;
+            gameOver();
             return true;
         }
-        if(btnStr[2].equals(btnStr[4]) && btnStr[4].equals(btnStr[6])){
+        if(!btnStr[2].equals("") && btnStr[2].equals(btnStr[4]) && btnStr[4].equals(btnStr[6])){
             winner = btnStr[2].equals("X")?1:2;
+            gameOver();
             return true;
         }
         return false;
@@ -109,8 +117,14 @@ public class MainActivity extends AppCompatActivity {
     // reset the game
     public void reset(){
         winner = 0;
+        Button resetBtn = findViewById(R.id.btn_reset);
+        resetBtn.setVisibility(View.INVISIBLE);
+        TextView status = findViewById(R.id.tv_winner);
+        status.setText("");
+        count = 0;
         for(int i = 0; i < 9; i++){
             btn[i].setText("");
+            btn[i].setEnabled(true);
         }
     }
 }
